@@ -36,11 +36,11 @@ public class GridPanel extends JPanel{
 		setPreferredSize(new Dimension(windowWidth, windowHeight));
 		
 		//2. Initialize the pixel array using the rows and cols variables.
-		pixels = new Pixel[windowWidth][windowHeight];
+		pixels = new Pixel[rows][cols];
 		
 		//3. Iterate through the array and initialize each element to a new pixel.
-		for (int i = 0; i < windowWidth; i++) {
-			for (int j = 0; j < windowHeight; j++) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
 				pixels[i][j] = new Pixel(i, j);
 			}
 		}
@@ -54,11 +54,8 @@ public class GridPanel extends JPanel{
 	public void clickPixel(int mouseX, int mouseY) {
 		//5. Use the mouseX and mouseY variables to change the color
 		//   of the pixel that was clicked. *HINT* Use the pixel's dimensions.
-		for (int i = mouseX/pixelWidth; i < (mouseX+1)/pixelWidth; i++) {
-			for (int j = mouseY/pixelHeight; j < (mouseY+1)/pixelHeight; j++) {
-				pixels[i][j].color = color;
-			}
-		}
+		System.out.println(mouseX + ", " + mouseY);
+		pixels[mouseX/rows][mouseY/cols].color = color;
 	}
 	
 	@Override
@@ -66,20 +63,20 @@ public class GridPanel extends JPanel{
 		//4. Iterate through the array.
 		//   For every pixel in the list, fill in a rectangle using the pixel's color.
 		//   Then, use drawRect to add a grid pattern to your display.
-		for (int i = 0; i < windowWidth; i++) {
-			for (int j = 0; j < windowHeight; j++) {
+		for (int i = 0; i < rows; i++) {
+			for (int j = 0; j < cols; j++) {
 				g.setColor(pixels[i][j].color);
-				g.fillRect(i, j, pixelWidth, pixelHeight);
+				g.fillRect(i*pixelWidth, j*pixelHeight, pixelWidth, pixelHeight);
 			}
 		}
-		
+
+		g.setColor(Color.BLACK);
 		for (int i = 0; i < rows; i++) {
-			g.setColor(Color.BLACK);
-			g.fillRect(i, 0, pixelWidth, windowHeight);
+			g.drawLine(0, i*pixelHeight, windowWidth, i*pixelHeight);
 		}
 		
 		for (int i = 0; i < cols; i++) {
-			g.fillRect(0, i, windowWidth, pixelHeight);
+			g.drawLine(i*pixelWidth, 0, i*pixelWidth, windowHeight);
 		}
 	}
 }
