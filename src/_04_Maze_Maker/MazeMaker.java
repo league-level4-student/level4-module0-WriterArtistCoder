@@ -11,7 +11,6 @@ public class MazeMaker {
 
 	private static Maze maze;
 
-	private static Random randGen = new Random();
 	private static Stack<Cell> uncheckedCells = new Stack<Cell>();
 	
 	public static void main(String args[]) {
@@ -37,27 +36,20 @@ public class MazeMaker {
 		// A. mark cell as visited
 		currentCell.setBeenVisited(true);
 		// B. check for unvisited neighbors using the cell
-		ArrayList<Cell> unvisited = new ArrayList<Cell>();
 		ArrayList<Cell> neighbors = getUnvisitedNeighbors(currentCell);
-		
-		for (Cell c : neighbors) {
-			if (!c.hasBeenVisited()) {
-				unvisited.add(c);
-			}
-		}
 		// C. if has unvisited neighbors,
-		if (unvisited.size() > 0) {
+		if (neighbors.size() > 0) {
 		// C1. select one at random.
-			Cell rando = unvisited.get(new Random().nextInt(unvisited.size()));
+			Cell rando = neighbors.get(new Random().nextInt(neighbors.size()));
 		// C2. push it to the stack
-			// FIXME What stack do I push it to?
+			uncheckedCells.push(rando);
 		// C3. remove the wall between the two cells
 			removeWalls(rando, currentCell);
 		// C4. make the new cell the current cell and mark it as visited
 			currentCell = rando;
 			rando.setBeenVisited(true);
 		// C5. call the selectNextPath method with the current cell
-			selectNextPath(rando);
+			selectNextPath(currentCell);
 		// D. if all neighbors are visited
 		} else {
 		// D1. if the stack is not empty
@@ -99,20 +91,17 @@ public class MazeMaker {
 	// to the ArrayList
 	private static ArrayList<Cell> getUnvisitedNeighbors(Cell c) {
 		ArrayList<Cell> cells = new ArrayList<Cell>();
-		Cell[] neigh = { maze.getCell(c.getX() - 1, c.getY() - 1),
-			maze.getCell(c.getX(), c.getY() - 1),
-			maze.getCell(c.getX() + 1, c.getY() - 1),
+		Cell[] neigh = { maze.getCell(c.getX(), c.getY() - 1),
 			maze.getCell(c.getX() - 1, c.getY()),
 			maze.getCell(c.getX(), c.getY()),
 			maze.getCell(c.getX() + 1, c.getY()),
-			maze.getCell(c.getX() - 1, c.getY() - 1),
-			maze.getCell(c.getX(), c.getY() - 1),
-			maze.getCell(c.getX() + 1, c.getY() - 1) };
+			maze.getCell(c.getX(), c.getY() - 1) };
 		
 		for (Cell c1 : neigh) {
 			if (c1.hasBeenVisited()) {
 				cells.add(c1);
 			}
 		}
+		return cells;
 	}
 }
