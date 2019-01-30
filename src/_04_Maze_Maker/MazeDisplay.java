@@ -8,15 +8,15 @@ import javax.swing.JPanel;
 public class MazeDisplay extends JPanel{
 	private static final long serialVersionUID = 1L;
 	
-	public static final int WIDTH = 800;
-	public static final int HEIGHT = 800;
+	public static final int WIDTH = 700;
+	public static final int HEIGHT = 700;
 	
 	private JFrame window;
 	
 	private Maze maze;
 	
 	MazeDisplay(){
-		super();
+		//super();
 		this.setPreferredSize(new Dimension(WIDTH, HEIGHT));
 		
 		window = new JFrame();
@@ -26,12 +26,13 @@ public class MazeDisplay extends JPanel{
 		window.setVisible(true);
 		window.pack();
 		
-		maze = MazeMaker.generateMaze(5, 5);
+		maze = MazeMaker.generateMaze(10, 10);
 		repaint();
 	}
 	
 	@Override
 	public void paintComponent(Graphics g){
+	
 		maze.draw(g);
 	}
 	
