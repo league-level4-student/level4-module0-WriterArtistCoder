@@ -6,6 +6,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.util.ArrayList;
 import java.util.Random;
 
 import javax.swing.JPanel;
@@ -31,12 +32,12 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		//2. Calculate the cell size.
 		cellSize = w/cpr;
 		//3. Initialize the cell array to the appropriate size.
-		cells = new Cell[w/cpr][h/cpr];
+		cells = new Cell[cpr][cpr];
 		//3. Iterate through the array and initialize each cell.
 		//   Don't forget to consider the cell's dimensions when 
 		//   passing in the location.
-		for (int i = 0; i < w/cpr; i++) {
-			for (int j = 0; j < h/cpr; i++) {
+		for (int i = 0; i < cpr; i++) {
+			for (int j = 0; j < cpr; j++) {
 				cells[i][j] = new Cell(i*cellSize, j*cellSize, cellSize);
 			}
 		}
@@ -45,9 +46,9 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	
 	public void randomizeCells() {
 		//4. Iterate through each cell and randomly set each
-		//   cell's isAlive memeber to true of false
+		//   cell's isAlive member to true or false
 		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; j < cells[i].length; i++) {
+			for (int j = 0; j < cells[i].length; j++) {
 				cells[i][j].isAlive = new Random().nextBoolean();
 			}
 		}
@@ -57,7 +58,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	public void clearCells() {
 		//5. Iterate through the cells and set them all to dead.
 		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; j < cells[i].length; i++) {
+			for (int j = 0; j < cells[i].length; j++) {
 				cells[i][j].isAlive = false;
 			}
 		}
@@ -80,11 +81,8 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	public void paintComponent(Graphics g) {
 		//6. Iterate through the cells and draw them all
 		for (int i = 0; i < cells.length; i++) {
-			for (int j = 0; j < cells[i].length; i++) {
-				if (cells[i][j].isAlive) {
-					g.setColor(Color.BLACK);
-					g.fillRect(cells[i][j].getX(), cells[i][j].getY(), cellSize, cellSize);
-				}
+			for (int j = 0; j < cells[i].length; j++) {
+				cells[i][j].draw(g);
 			}
 		}
 		
@@ -98,13 +96,24 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	public void step() {
 		//7. iterate through cells and fill in the livingNeighbors array
 		// . using the getLivingNeighbors method.
+		Cell[][] cellsa = cells.clone();
 		int[][] livingNeighbors = new int[cellsPerRow][cellsPerRow];
+		for (int i = 0; i < livingNeighbors.length; i++) {
+			for (int j = 0; j < livingNeighbors[i].length; j++) {
+				livingNeighbors[i][j] = getLivingNeighbors(i, j);
+			}
+		}
 		
 		//8. check if each cell should live or die
-	
+		for (int i = 0; i < livingNeighbors.length; i++) {
+			for (int j = 0; j < livingNeighbors[i].length; j++) {
+				int hey = livingNeighbors[i][j];
+				cellsa[i][j].liveOrDie(hey);
+			}
+		}
 		
-		
-		
+		cells = cellsa;
+
 		repaint();
 	}
 	
@@ -113,9 +122,18 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 	//   living neighbors there are of the 
 	//   cell identified by x and y
 	public int getLivingNeighbors(int x, int y){
-		return 0;
+		int haha = 0;
+		for (int a = Math.max(y-1, 0); a <= Math.min(y+1, cellsPerRow-1); a++) {
+			for (int b = Math.max(x-1, 0); b <= Math.min(x+1, cellsPerRow-1); b++) {
+				if (cells[a][b].isAlive && !(a == y && b == x)) {
+					haha++;
+				}
+			}
+		}
+		
+		return haha;
 	}
-
+	
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
@@ -138,9 +156,7 @@ public class WorldPanel extends JPanel implements MouseListener, ActionListener 
 		//10. Use e.getX() and e.getY() to determine
 		//    which cell is clicked. Then toggle
 		//    the isAlive variable for that cell.
-		
-		
-		
+		cells[e.getX()/cellSize][e.getY()/cellSize].isAlive = !cells[e.getX()/cellSize][e.getY()/cellSize].isAlive;
 		
 		repaint();
 	}
